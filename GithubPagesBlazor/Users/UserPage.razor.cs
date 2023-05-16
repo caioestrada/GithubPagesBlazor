@@ -5,31 +5,19 @@ namespace GithubPagesBlazor.Users
     public partial class UserPage
     {
         [Inject]
-        public UserRepository _userRepository { get; set; }
+        public UserService _userService { get; set; }
 
-        private IList<User> users = new List<User>();
+        private List<User> users = new List<User>();
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
-            LoadUsers();
-            return Task.CompletedTask;
+            await LoadUsers();
+            StateHasChanged();
         }
 
-        void LoadUsers()
+        public async Task LoadUsers()
         {
-            users = _userRepository.Users.FindAll().ToList();
-        }
-
-        void DeleteUser(int userId)
-        {
-            _userRepository.Delete(userId);
-            LoadUsers();
-        }
-
-        void InsertUser()
-        {
-            _userRepository.Insert(new User { FirstName = "first name", LastName = "last name", Email = "test@test.com" });
-            LoadUsers();
+            users = (await _userService.GetAll()).ToList();
         }
     }
 }
